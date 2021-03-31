@@ -16,6 +16,9 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
     private val _showError = MutableLiveData<Boolean>()
     val showError: LiveData<Boolean> = _showError
 
+    private val _answerStatus = MutableLiveData<String>()
+    val answerStatus: LiveData<String> = _answerStatus
+
     var answers: IntArray = intArrayOf()
     var currentAnswerIndex = 0
     var currentAnswer = 0
@@ -38,11 +41,13 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
     private fun setLoadState() {
         _showProgress.postValue(true)
         _showError.postValue(false)
+        _answerStatus.postValue("")
     }
 
     private fun setLoadStateCompleted() {
         _showProgress.postValue(false)
         _showError.postValue(false)
+        _answerStatus.postValue("")
     }
 
     private fun setErrorState() {
@@ -54,5 +59,11 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
 
         if (index <= answers.size - 1)
             currentAnswer = answers[index]
+    }
+
+    fun submitAnswer(guess: Int) {
+        if (guess > currentAnswer) {
+            _answerStatus.postValue("입력한 값이 정답보다 큽니다.")
+        }
     }
 }
