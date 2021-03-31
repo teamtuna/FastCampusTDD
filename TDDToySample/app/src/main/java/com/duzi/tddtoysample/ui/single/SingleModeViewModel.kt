@@ -19,9 +19,13 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
     private val _answerStatus = MutableLiveData<String>()
     val answerStatus: LiveData<String> = _answerStatus
 
+    private val _triesStatus = MutableLiveData<String>()
+    val triesStatus: LiveData<String> = _triesStatus
+
     var answers: IntArray = intArrayOf()
     var currentAnswerIndex = 0
     var currentAnswer = 0
+    var tries: Int = 0
 
     fun loadAnswers() {
         setLoadState()
@@ -34,6 +38,25 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
                 }
                 is Result.Error -> { setErrorState() }
                 else -> {}
+            }
+        }
+    }
+
+    fun selectAnswer(index: Int) {
+        currentAnswerIndex = index
+
+        if (index <= answers.size - 1)
+            currentAnswer = answers[index]
+    }
+
+    fun submitAnswer(guess: Int) {
+        tries++
+        when {
+            guess > currentAnswer -> _answerStatus.postValue("입력한 값이 정답보다 큽니다.")
+            guess < currentAnswer -> _answerStatus.postValue("입력한 값이 정답보다 작습니다.")
+            else -> {
+                _answerStatus.postValue("정답!")
+                setTriesStatus()
             }
         }
     }
@@ -54,18 +77,8 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
         _showError.postValue(true)
     }
 
-    fun selectAnswer(index: Int) {
-        currentAnswerIndex = index
-
-        if (index <= answers.size - 1)
-            currentAnswer = answers[index]
-    }
-
-    fun submitAnswer(guess: Int) {
-        if (guess > currentAnswer) {
-            _answerStatus.postValue("입력한 값이 정답보다 큽니다.")
-        } else if (guess < currentAnswer) {
-            _answerStatus.postValue("입력한 값이 정답보다 작습니다.")
-        }
+    private fun setTriesStatus() {
+        _triesStatus.postValue("총 ${tries}회 시도")
+        tries = 0
     }
 }
