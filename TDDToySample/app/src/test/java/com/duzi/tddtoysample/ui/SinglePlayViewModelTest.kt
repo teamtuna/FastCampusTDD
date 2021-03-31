@@ -142,9 +142,40 @@ class SinglePlayViewModelTest {
 
     @Test
     fun `첫번째 문제 정답 맞추기 시도 후 정답보다 낮음 테스트`() {
-        mainCoroutineRule.pauseDispatcher()
+        runBlocking {
+            singleModeViewModel.loadAnswers()
+            var isShowProgress = LiveDataTestUtil.getValue(singleModeViewModel.showProgress)
+            if (isShowProgress != null) {
+                Assert.assertTrue(isShowProgress)
+            } else {
+                throw Exception("isShowProgress is null")
+            }
+        }
 
-        mainCoroutineRule.resumeDispatcher()
+        runBlocking {
+            delay(2000)
+
+            var isShowProgress = LiveDataTestUtil.getValue(singleModeViewModel.showProgress)
+            if (isShowProgress != null) {
+                Assert.assertFalse(isShowProgress)
+            } else {
+                throw Exception("isShowProgress is null")
+            }
+        }
+
+        singleModeViewModel.selectAnswer(0)
+
+        Assert.assertEquals(0, singleModeViewModel.currentAnswerIndex)
+
+        val answer = singleModeViewModel.currentAnswer
+
+        Assert.assertEquals(99, answer)
+
+        val guess = 50
+        singleModeViewModel.submitAnswer(guess)
+
+        var answerStatus = LiveDataTestUtil.getValue(singleModeViewModel.answerStatus)
+        Assert.assertEquals("입력한 값이 정답보다 작습니다.", answerStatus)
     }
 
     /* @Test

@@ -64,6 +64,8 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
     fun submitAnswer(guess: Int) {
         if (guess > currentAnswer) {
             _answerStatus.postValue("입력한 값이 정답보다 큽니다.")
+        } else if (guess < currentAnswer) {
+            _answerStatus.postValue("입력한 값이 정답보다 작습니다.")
         }
     }
 }
