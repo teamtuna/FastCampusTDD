@@ -1,10 +1,12 @@
 package com.duzi.tddtoysample.ui
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Observer
 import com.duzi.tddtoysample.LiveDataTestUtil
 import com.duzi.tddtoysample.MainCoroutineRule
 import com.duzi.tddtoysample.data.data.source.local.fake.testIntArray
 import com.duzi.tddtoysample.domain.repository.AnswerGenerateRepository
+import com.duzi.tddtoysample.domain.usecase.GenerateQuizUseCase
 import com.duzi.tddtoysample.domain.usecase.GetAnswersUseCase
 import com.duzi.tddtoysample.ui.single.SingleModeViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,8 +36,37 @@ class SinglePlayViewModelTest {
     @Before
     fun setupViewModel() {
         answerGenerateRepository = FakeAnswerGenerateRepositoryImpl()
-        singleModeViewModel = SingleModeViewModel(GetAnswersUseCase(answerGenerateRepository))
+        singleModeViewModel = SingleModeViewModel(
+            GetAnswersUseCase(answerGenerateRepository),
+            GenerateQuizUseCase(answerGenerateRepository)
+        )
     }
+
+    @Test
+    fun `생성된 값과 정답의 일치 확인`() = runBlocking {
+
+        //give
+        singleModeViewModel.generateAnswer()
+        //when
+        val answerList = singleModeViewModel.answer.value
+
+        //then
+
+        singleModeViewModel.answer.observeForever(Observer {
+            Assert.assertEquals(it, answerList)
+        })
+    }
+
+    @Test
+    fun `생성된 값리스트와 정답의 일치 확인`() = runBlockingTest {
+
+        //give
+
+        //when
+
+        //then
+    }
+
 
     @Test
     fun `정답 리스트 로드 테스트`() = runBlockingTest {
@@ -67,6 +98,7 @@ class SinglePlayViewModelTest {
 
         //mainCoroutineRule.resumeDispatcher()
     }
+
 
     @Test
     fun `첫번째 문제 세팅 테스트`() = runBlockingTest {
@@ -275,9 +307,15 @@ class SinglePlayViewModelTest {
         Assert.assertEquals(1, singleModeViewModel.currentAnswerIndex)
     }
 
-    internal class FakeAnswerGenerateRepositoryImpl: AnswerGenerateRepository {
+
+    internal class FakeAnswerGenerateRepositoryImpl : AnswerGenerateRepository {
         override fun generateLessThanOrEqualToHundred(): IntArray {
             return testIntArray
+        }
+
+        override fun generateQuiz(): Int {
+            // Random 값을 줄꺼잖아요
+            return 1
         }
     }
 }

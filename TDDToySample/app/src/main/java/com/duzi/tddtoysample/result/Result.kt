@@ -42,3 +42,10 @@ inline fun <reified T> Result<T>.updateOnSuccess(liveData: MutableLiveData<T>) {
         liveData.value = data
     }
 }
+
+inline fun <reified T> Result<T>.process(success: (T) -> Unit, error: (T) -> Unit) {
+    when (this) {
+        is Result.Success -> success(data)
+        is Result.Error -> error(exception)
+    }
+}
