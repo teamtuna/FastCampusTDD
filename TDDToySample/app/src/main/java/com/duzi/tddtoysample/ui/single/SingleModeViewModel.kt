@@ -4,11 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.duzi.tddtoysample.domain.usecase.GenerateQuizUseCase
 import com.duzi.tddtoysample.domain.usecase.GetAnswersUseCase
 import com.duzi.tddtoysample.result.*
 import kotlinx.coroutines.launch
 
-class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): ViewModel() {
+class SingleModeViewModel(
+    private val getAnswersUseCase: GetAnswersUseCase,
+    private val generateQuizUseCase: GenerateQuizUseCase
+) : ViewModel() {
 
     private val _showProgress = MutableLiveData<Boolean>()
     val showProgress: LiveData<Boolean> = _showProgress
@@ -36,8 +40,11 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
                     answers = resultAnswers
                     setLoadStateCompleted()
                 }
-                is Result.Error -> { setErrorState() }
-                else -> {}
+                is Result.Error -> {
+                    setErrorState()
+                }
+                else -> {
+                }
             }
         }
     }
@@ -85,5 +92,18 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
     private fun setTriesStatus() {
         _triesStatus.postValue("총 ${tries}회 시도")
         tries = 0
+    }
+
+    private val _answer = MutableLiveData<Int>()
+    val answer: LiveData<Int> get() = _answer
+
+    fun generateAnswer() {
+        viewModelScope.launch {
+            generateQuizUseCase(Unit).process({
+                _answer.postValue(it)
+            }, {
+                //error
+            })
+        }
     }
 }
