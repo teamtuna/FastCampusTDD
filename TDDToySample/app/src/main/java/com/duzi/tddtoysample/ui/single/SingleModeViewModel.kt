@@ -65,16 +65,21 @@ class SingleModeViewModel(private val getAnswersUseCase: GetAnswersUseCase): Vie
         _showProgress.postValue(true)
         _showError.postValue(false)
         _answerStatus.postValue("")
+        _triesStatus.postValue("")
     }
 
     private fun setLoadStateCompleted() {
         _showProgress.postValue(false)
         _showError.postValue(false)
         _answerStatus.postValue("")
+        _triesStatus.postValue("")
     }
 
     private fun setErrorState() {
+        _showProgress.postValue(false)
         _showError.postValue(true)
+        _answerStatus.postValue("")
+        _triesStatus.postValue("")
     }
 
     private fun setTriesStatus() {
