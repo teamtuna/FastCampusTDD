@@ -3,7 +3,6 @@ package com.duzi.tddtoysample.ui
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.duzi.tddtoysample.MainCoroutineRule
-import com.duzi.tddtoysample.ui.single.MainViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert

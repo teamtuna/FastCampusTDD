@@ -1,4 +1,4 @@
-package com.duzi.tddtoysample.ui.single
+package com.duzi.tddtoysample.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
