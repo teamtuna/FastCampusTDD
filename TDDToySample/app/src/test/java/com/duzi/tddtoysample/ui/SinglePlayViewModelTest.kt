@@ -8,6 +8,7 @@ import com.duzi.tddtoysample.domain.usecase.GenerateQuizUseCase
 import com.duzi.tddtoysample.ui.single.SingleModeViewModel
 import com.nhaarman.mockitokotlin2.mockingDetails
 import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
@@ -15,7 +16,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
 
@@ -66,6 +66,8 @@ class SinglePlayViewModelTest {
         //then
         val answer = LiveDataTestUtil.getValue(singleModeViewModel.answer)
         Assert.assertEquals(expected, answer)
+
+        verify(answerGenerateRepository, times(1)).generateQuiz()
     }
 
     @Test
@@ -85,6 +87,8 @@ class SinglePlayViewModelTest {
         //then
         val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
         Assert.assertEquals(SingleModeViewModel.QuizState.UP, quizState)
+
+        verify(answerGenerateRepository, times(1)).generateQuiz()
     }
 
     @Test
@@ -104,6 +108,8 @@ class SinglePlayViewModelTest {
         //then
         val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
         Assert.assertEquals(SingleModeViewModel.QuizState.DOWN, quizState)
+
+        verify(answerGenerateRepository, times(1)).generateQuiz()
     }
 
     @Test
@@ -123,6 +129,8 @@ class SinglePlayViewModelTest {
         //then
         val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
         Assert.assertEquals(SingleModeViewModel.QuizState.BINGO, quizState)
+
+        verify(answerGenerateRepository, times(1)).generateQuiz()
     }
 
     @Test
@@ -160,5 +168,7 @@ class SinglePlayViewModelTest {
         //then
         val tryStatus = LiveDataTestUtil.getValue(singleModeViewModel.tryStatus)
         Assert.assertEquals(expectedTryStatus, tryStatus)
+
+        verify(answerGenerateRepository, times(1)).generateQuiz()
     }
 }
