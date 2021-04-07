@@ -16,6 +16,10 @@ class SingleModeViewModel(
         object BINGO : QuizState()
     }
 
+    // 시도 상태
+    private val _tryStatus = MutableLiveData<String>()
+    val tryStatus: LiveData<String> = _tryStatus
+
     // 정답
     private val _answer = MutableLiveData<Int>()
     val answer: LiveData<Int> get() = _answer
@@ -55,8 +59,15 @@ class SingleModeViewModel(
             guess > answer -> QuizState.UP
             guess < answer -> QuizState.DOWN
             else -> {
+                setTriesStatus()
                 QuizState.BINGO
             }
         }
     }
+
+    private fun setTriesStatus() {
+        _tryStatus.postValue("총 ${tries}회 시도")
+        tries = 0
+    }
+
 }
