@@ -60,7 +60,6 @@ class SinglePlayViewModelTest {
 
         //when
         singleModeViewModel.generateAnswer()
-        verify(answerGenerateRepository, times(1)).generateQuiz()
         println(mockingDetails(answerGenerateRepository).printInvocations())
         val expected = 60
 
@@ -76,7 +75,6 @@ class SinglePlayViewModelTest {
                 .thenReturn(70)
 
         singleModeViewModel.generateAnswer()
-        verify(answerGenerateRepository, times(1)).generateQuiz()
         println(mockingDetails(answerGenerateRepository).printInvocations())
 
         val guess = 73
@@ -96,7 +94,6 @@ class SinglePlayViewModelTest {
                 .thenReturn(70)
 
         singleModeViewModel.generateAnswer()
-        verify(answerGenerateRepository, times(1)).generateQuiz()
         println(mockingDetails(answerGenerateRepository).printInvocations())
 
         val guess = 40
@@ -116,7 +113,6 @@ class SinglePlayViewModelTest {
             .thenReturn(70)
 
         singleModeViewModel.generateAnswer()
-        verify(answerGenerateRepository, times(1)).generateQuiz()
         println(mockingDetails(answerGenerateRepository).printInvocations())
 
         val guess = 70
@@ -136,7 +132,6 @@ class SinglePlayViewModelTest {
                 .thenReturn(70)
 
         singleModeViewModel.generateAnswer()
-        verify(answerGenerateRepository, times(1)).generateQuiz()
         println(mockingDetails(answerGenerateRepository).printInvocations())
 
         var guess = 50
