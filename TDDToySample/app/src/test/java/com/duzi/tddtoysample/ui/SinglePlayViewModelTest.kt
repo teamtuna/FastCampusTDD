@@ -86,7 +86,7 @@ class SinglePlayViewModelTest {
 
         //then
         val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
-        Assert.assertEquals(SingleModeViewModel.QuizState.UP, quizState)
+        Assert.assertTrue(quizState is SingleModeViewModel.QuizState.UP)
 
         verify(answerGenerateRepository, times(1)).generateQuiz()
     }
@@ -107,7 +107,7 @@ class SinglePlayViewModelTest {
 
         //then
         val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
-        Assert.assertEquals(SingleModeViewModel.QuizState.DOWN, quizState)
+        Assert.assertTrue(quizState is SingleModeViewModel.QuizState.DOWN)
 
         verify(answerGenerateRepository, times(1)).generateQuiz()
     }
@@ -128,7 +128,7 @@ class SinglePlayViewModelTest {
 
         //then
         val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
-        Assert.assertEquals(SingleModeViewModel.QuizState.BINGO, quizState)
+        Assert.assertTrue(quizState is SingleModeViewModel.QuizState.BINGO)
 
         verify(answerGenerateRepository, times(1)).generateQuiz()
     }
@@ -143,31 +143,30 @@ class SinglePlayViewModelTest {
         println(mockingDetails(answerGenerateRepository).printInvocations())
 
         var guess = 50
-        val expectedTryStatus = "총 4회 시도"
+        val expectedTries = 4
 
         //when
         singleModeViewModel.submitAnswer(guess)
         var quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
-        Assert.assertEquals(SingleModeViewModel.QuizState.DOWN, quizState)
+        Assert.assertTrue(quizState is SingleModeViewModel.QuizState.DOWN)
 
         guess = 60
         singleModeViewModel.submitAnswer(guess)
         quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
-        Assert.assertEquals(SingleModeViewModel.QuizState.DOWN, quizState)
+        Assert.assertTrue(quizState is SingleModeViewModel.QuizState.DOWN)
 
         guess = 80
         singleModeViewModel.submitAnswer(guess)
         quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
-        Assert.assertEquals(SingleModeViewModel.QuizState.UP, quizState)
+        Assert.assertTrue(quizState is SingleModeViewModel.QuizState.UP)
 
         guess = 70
         singleModeViewModel.submitAnswer(guess)
         quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
-        Assert.assertEquals(SingleModeViewModel.QuizState.BINGO, quizState)
+        Assert.assertTrue(quizState is SingleModeViewModel.QuizState.BINGO)
 
         //then
-        val tryStatus = LiveDataTestUtil.getValue(singleModeViewModel.tryStatus)
-        Assert.assertEquals(expectedTryStatus, tryStatus)
+        Assert.assertEquals(expectedTries, (quizState as SingleModeViewModel.QuizState.BINGO).tries)
 
         verify(answerGenerateRepository, times(1)).generateQuiz()
     }

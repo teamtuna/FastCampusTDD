@@ -13,12 +13,8 @@ class SingleModeViewModel(
     sealed class QuizState {
         object UP : QuizState()
         object DOWN : QuizState()
-        object BINGO : QuizState()
+        class BINGO(val tries: Int = 0) : QuizState()
     }
-
-    // 시도 상태
-    private val _tryStatus = MutableLiveData<String>()
-    val tryStatus: LiveData<String> = _tryStatus
 
     // 정답
     private val _answer = MutableLiveData<Int>()
@@ -40,6 +36,8 @@ class SingleModeViewModel(
     private var tries: Int = 0
 
     fun generateAnswer() {
+        //tries = 0
+
         viewModelScope.launch {
             generateQuizUseCase(Unit).process({
                 _answer.postValue(it)
@@ -59,15 +57,9 @@ class SingleModeViewModel(
             guess > answer -> QuizState.UP
             guess < answer -> QuizState.DOWN
             else -> {
-                setTriesStatus()
-                QuizState.BINGO
+                QuizState.BINGO(tries)
             }
         }
-    }
-
-    private fun setTriesStatus() {
-        _tryStatus.postValue("총 ${tries}회 시도")
-        tries = 0
     }
 
 }
