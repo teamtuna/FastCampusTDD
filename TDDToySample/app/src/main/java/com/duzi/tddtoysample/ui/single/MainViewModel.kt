@@ -21,5 +21,9 @@ class MainViewModel(
         _navigationEvent.postValue(NavigationEvent.GoToSinglePlay)
     }
 
+    fun onClickMultiPlay() {
+        _navigationEvent.postValue(NavigationEvent.GoToMultiPlay)
+    }
+
 
 }

@@ -37,4 +37,11 @@ class MainViewModelTest {
         })
     }
 
+    @Test
+    fun `멀티 플레이 모드 선택`() = runBlocking {
+        mainViewModel.onClickMultiPlay()
+        mainViewModel.navigationEvent.observeForever(Observer {
+            Assert.assertEquals(it, MainViewModel.NavigationEvent.GoToMultiPlay)
+        })
+    }
 }
