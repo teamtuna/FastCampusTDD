@@ -45,22 +45,24 @@ class SinglePlayViewModelTest {
     @Test
     fun `생성된 값과 정답의 일치 확인`() {
 
-        //give
-        val expected = 1
+        //given
+        whenever(answerGenerateRepository.generateQuiz())
+                .thenReturn(60)
 
         //when
         singleModeViewModel.generateAnswer()
+        verify(answerGenerateRepository, times(1)).generateQuiz()
+        val expected = 60
 
         //then
-        singleModeViewModel.answer.observeForever {
-            Assert.assertEquals(expected, it)
-        }
+        val answer = LiveDataTestUtil.getValue(singleModeViewModel.answer)
+        Assert.assertEquals(expected, answer)
     }
 
     @Test
     fun `생성된 값리스트와 정답의 일치 확인`() = runBlockingTest {
 
-        //give
+        //given
 
         //when
 
