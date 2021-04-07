@@ -7,7 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.duzi.tddtoysample.domain.usecase.GenerateQuizUseCase
 import com.duzi.tddtoysample.domain.usecase.GetAnswersUseCase
 import com.duzi.tddtoysample.result.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SingleModeViewModel(
     private val getAnswersUseCase: GetAnswersUseCase,
@@ -33,27 +36,24 @@ class SingleModeViewModel(
 
     fun loadAnswers() {
         setLoadState()
-        viewModelScope.launch {
-            when (val result = getAnswersUseCase(Unit)) {
-                is Result.Success -> {
-                    val resultAnswers = result.successOr(intArrayOf())
-                    answers = resultAnswers
-                    setLoadStateCompleted()
-                }
-                is Result.Error -> {
-                    setErrorState()
-                }
-                else -> {
-                }
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            getAnswersUseCase(Unit).process({
+                answers = it
+                setLoadStateCompleted()
+            }, {
+                setErrorState()
+            })
         }
     }
 
     fun selectAnswer(index: Int) {
         currentAnswerIndex = index
 
-        if (index <= answers.size - 1)
+        if (index <= answers.size - 1) {
             currentAnswer = answers[index]
+        } else {
+            throw Exception("index error")
+        }
     }
 
     fun submitAnswer(guess: Int) {
