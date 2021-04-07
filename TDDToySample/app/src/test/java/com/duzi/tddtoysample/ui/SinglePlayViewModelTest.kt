@@ -1,24 +1,22 @@
 package com.duzi.tddtoysample.ui
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
 import com.duzi.tddtoysample.LiveDataTestUtil
 import com.duzi.tddtoysample.MainCoroutineRule
-import com.duzi.tddtoysample.data.data.source.local.fake.testIntArray
 import com.duzi.tddtoysample.domain.repository.AnswerGenerateRepository
 import com.duzi.tddtoysample.domain.usecase.GenerateQuizUseCase
-import com.duzi.tddtoysample.domain.usecase.GetAnswersUseCase
 import com.duzi.tddtoysample.ui.single.SingleModeViewModel
-import kotlinx.coroutines.Dispatchers
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.*
+import org.mockito.Mock
+import org.mockito.Mockito.verify
+import org.mockito.MockitoAnnotations
 
 
 @ExperimentalCoroutinesApi
@@ -26,6 +24,7 @@ class SinglePlayViewModelTest {
 
     private lateinit var singleModeViewModel: SingleModeViewModel
 
+    @Mock
     private lateinit var answerGenerateRepository: AnswerGenerateRepository
 
     @get:Rule
@@ -36,10 +35,9 @@ class SinglePlayViewModelTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     @Before
-    fun setupViewModel() {
-        answerGenerateRepository = FakeAnswerGenerateRepositoryImpl()
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
         singleModeViewModel = SingleModeViewModel(
-            GetAnswersUseCase(answerGenerateRepository),
             GenerateQuizUseCase(answerGenerateRepository)
         )
     }
@@ -72,95 +70,76 @@ class SinglePlayViewModelTest {
     @Test
     fun `정답을 입력하고 입력한 값이 정답보다 높으면 높다고 출력 함`() {
         //given
-        singleModeViewModel.loadAnswers()
-        runBlocking { delay(100) }
-        singleModeViewModel.selectAnswer(0)
-        val guess = 100
-        val expectedStatus = "입력한 값이 정답보다 큽니다."
+        whenever(answerGenerateRepository.generateQuiz())
+                .thenReturn(70)
+
+        singleModeViewModel.generateAnswer()
+        verify(answerGenerateRepository, times(1)).generateQuiz()
+
+        val guess = 73
 
         //when
         singleModeViewModel.submitAnswer(guess)
 
         //then
-        singleModeViewModel.answerStatus.observeForever { answerStatus ->
-            Assert.assertEquals(expectedStatus, answerStatus)
-        }
+        val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
+        Assert.assertEquals(SingleModeViewModel.QuizState.UP, quizState)
     }
 
     @Test
     fun `정답을 입력하고 입력한 값이 정답보다 낮으면 낮다고 출력 함`() {
         //given
-        singleModeViewModel.loadAnswers()
-        runBlocking { delay(100) }
-        singleModeViewModel.selectAnswer(0)
-        val guess = 1
-        val expectedStatus = "입력한 값이 정답보다 작습니다."
+        whenever(answerGenerateRepository.generateQuiz())
+                .thenReturn(70)
+
+        singleModeViewModel.generateAnswer()
+        verify(answerGenerateRepository, times(1)).generateQuiz()
+
+        val guess = 40
 
         //when
         singleModeViewModel.submitAnswer(guess)
 
         //then
-        singleModeViewModel.answerStatus.observeForever { answerStatus ->
-            Assert.assertEquals(expectedStatus, answerStatus)
-        }
+        val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
+        Assert.assertEquals(SingleModeViewModel.QuizState.DOWN, quizState)
     }
 
     @Test
     fun `정답을 입력하고 입력한 값이 정답과 같으면 같다고 출력 함`() {
         //given
-        singleModeViewModel.loadAnswers()
-        runBlocking { delay(100) }
-        singleModeViewModel.selectAnswer(0)
-        val guess = 99
-        val expectedStatus = "정답!"
+        whenever(answerGenerateRepository.generateQuiz())
+            .thenReturn(70)
+
+        singleModeViewModel.generateAnswer()
+        verify(answerGenerateRepository, times(1)).generateQuiz()
+
+        val guess = 70
 
         //when
         singleModeViewModel.submitAnswer(guess)
 
         //then
-        singleModeViewModel.answerStatus.observeForever { answerStatus ->
-            Assert.assertEquals(expectedStatus, answerStatus)
-        }
+        val quizState = LiveDataTestUtil.getValue(singleModeViewModel.quizState)
+        Assert.assertEquals(SingleModeViewModel.QuizState.BINGO, quizState)
     }
 
     @Test
     fun `정답을 맞추고 시도한 횟수와 정답임을 알려줌`() {
         //given
-        singleModeViewModel.loadAnswers()
-        runBlocking { delay(100) }
-        singleModeViewModel.selectAnswer(0)
+        singleModeViewModel.generateAnswer()
         var guess = 50
-        val expectedAnswerStatus = "정답!"
         val expectedTryStatus = "총 4회 시도"
 
         //when
         singleModeViewModel.submitAnswer(guess)
         guess = 60
         singleModeViewModel.submitAnswer(guess)
-        guess = 70
+        guess = 80
         singleModeViewModel.submitAnswer(guess)
-        guess = 99
+        guess = 70
         singleModeViewModel.submitAnswer(guess)
 
         //then
-        singleModeViewModel.answerStatus.observeForever { answerStatus ->
-            Assert.assertEquals(expectedAnswerStatus, answerStatus)
-        }
-
-        singleModeViewModel.triesStatus.observeForever { tryStatus ->
-            Assert.assertEquals(expectedTryStatus, tryStatus)
-        }
-    }
-
-
-    internal class FakeAnswerGenerateRepositoryImpl : AnswerGenerateRepository {
-        override fun generateLessThanOrEqualToHundred(): IntArray {
-            return testIntArray
-        }
-
-        override fun generateQuiz(): Int {
-            // Random 값을 줄꺼잖아요
-            return 1
-        }
     }
 }
