@@ -56,6 +56,7 @@ class SinglePlayViewModelTest {
         //when
         singleModeViewModel.generateAnswer()
         verify(answerGenerateRepository, times(1)).generateQuiz()
+        println(mockingDetails(answerGenerateRepository).printInvocations())
         val expected = 60
 
         //then
@@ -111,6 +112,7 @@ class SinglePlayViewModelTest {
 
         singleModeViewModel.generateAnswer()
         verify(answerGenerateRepository, times(1)).generateQuiz()
+        println(mockingDetails(answerGenerateRepository).printInvocations())
 
         val guess = 70
 
@@ -130,6 +132,8 @@ class SinglePlayViewModelTest {
 
         singleModeViewModel.generateAnswer()
         verify(answerGenerateRepository, times(1)).generateQuiz()
+        println(mockingDetails(answerGenerateRepository).printInvocations())
+
         var guess = 50
         val expectedTryStatus = "총 4회 시도"
 
