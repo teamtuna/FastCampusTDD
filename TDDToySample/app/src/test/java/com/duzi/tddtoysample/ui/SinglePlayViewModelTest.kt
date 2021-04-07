@@ -10,13 +10,11 @@ import com.nhaarman.mockitokotlin2.mockingDetails
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
@@ -38,8 +36,15 @@ class SinglePlayViewModelTest {
 
     @Before
     fun setUp() {
+        /**
+         * 아래 코드와 동일함.
+         * answerGenerateRepository = mock(AnswerGenerateRepository::class.java)
+         *
+         * or
+         *
+         * @RunWith(MockitoJUnitRunner::class)
+         */
         MockitoAnnotations.initMocks(this)
-        answerGenerateRepository = mock(AnswerGenerateRepository::class.java)
 
         singleModeViewModel = SingleModeViewModel(
             GenerateQuizUseCase(answerGenerateRepository)
