@@ -24,12 +24,9 @@ class SingleModeViewModel(
     private val _guess = MutableLiveData<Int>()
 
     // 퀴즈 상태
-    private val _quizState = MediatorLiveData<QuizState>().apply {
-        addSource(_guess) { guess ->
-            answer.value?.let { answer ->
-                val result = checkState(answer, guess)
-                value = result
-            }
+    private val _quizState = Transformations.switchMap(_guess) { guess ->
+        _answer.value?.let { answer ->
+            MutableLiveData(checkState(answer, guess))
         }
     }
     val quizState: LiveData<QuizState> = _quizState
